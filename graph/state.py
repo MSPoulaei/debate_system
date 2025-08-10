@@ -1,7 +1,7 @@
-from typing import TypedDict, List, Dict, Optional, Literal
+from typing import TypedDict, List, Dict, Optional, Literal, Annotated
 from datetime import datetime
 from pydantic import BaseModel, Field
-
+import operator
 
 class Message(BaseModel):
     """Represents a single message in the debate"""
@@ -24,15 +24,13 @@ class JudgeVote(BaseModel):
 
 
 class DebateState(TypedDict):
-    """Main state object for the debate workflow"""
-
     topic: str
     agent_a_persona: str
     agent_b_persona: str
-    messages: List[Message]
+    messages: Annotated[List[Message], operator.add]       # allows returning {"messages": [msg]}
     current_turn: int
-    current_speaker: Literal["Agent A", "Agent B"]
+    current_speaker: str
     debate_complete: bool
-    judge_votes: List[JudgeVote]
+    judge_votes: Annotated[List[JudgeVote], operator.add]  # allows returning {"judge_votes": [vote]}
     final_winner: Optional[str]
-    metrics: Dict[str, any]
+    metrics: Dict

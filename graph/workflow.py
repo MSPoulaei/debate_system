@@ -43,8 +43,8 @@ class DebateWorkflow:
         workflow.add_node("final_decision", self.final_decision)
 
         # Add edges
-        workflow.add_edge("agent_a_turn", "agent_b_turn")
-        workflow.add_edge("agent_b_turn", "agent_a_turn")
+        # workflow.add_edge("agent_a_turn", "agent_b_turn")
+        # workflow.add_edge("agent_b_turn", "agent_a_turn")
 
         # Conditional edges
         workflow.add_conditional_edges(
@@ -67,51 +67,35 @@ class DebateWorkflow:
 
         return workflow.compile(checkpointer=self.memory)
 
-    def agent_a_turn(self, state: DebateState) -> DebateState:
-        """Executes Agent A's turn"""
-        if state["current_turn"] > 10:
-            return state
-
-        # Generate response
+    def agent_a_turn(self, state: DebateState) -> Dict:
         response = self.agent_a.generate_response(state)
-        state["messages"].append(response)
-
-        # Update metrics
         self.metrics_collector.update_message_metrics(response)
+        return {
+            "messages": [response],          # Append pattern (see Annotated below)
+            "current_speaker": "Agent B",
+        }
 
-        # Update state
-        state["current_speaker"] = "Agent B"
-
-        return state
-
-    def agent_b_turn(self, state: DebateState) -> DebateState:
-        """Executes Agent B's turn"""
-        # Generate response
+    def agent_b_turn(self, state: DebateState) -> Dict:
         response = self.agent_b.generate_response(state)
-        state["messages"].append(response)
-
-        # Update metrics
         self.metrics_collector.update_message_metrics(response)
-
-        # Update state
-        state["current_turn"] += 1
-        state["current_speaker"] = "Agent A"
-
-        return state
+        return {
+            "messages": [response],
+            "current_turn": state["current_turn"] + 1,
+            "current_speaker": "Agent A",
+        }
 
     def should_continue_debate(self, state: DebateState) -> bool:
         """Determines if the debate should continue"""
         return state["current_turn"] <= 10
 
-    def judge_evaluation(self, state: DebateState) -> DebateState:
-        """All judges evaluate the debate"""
-        state["debate_complete"] = True
-
+    def judge_evaluation(self, state: DebateState) -> Dict:
+        votes = []
         for judge in self.judges:
-            vote = judge.evaluate_debate(state)
-            state["judge_votes"].append(vote)
-
-        return state
+            votes.append(judge.evaluate_debate(state))
+        return {
+            "debate_complete": True,
+            "judge_votes": votes,
+        }
 
     def final_decision(self, state: DebateState) -> DebateState:
         """Determines the final winner based on judge votes"""
