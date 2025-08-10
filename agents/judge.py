@@ -20,8 +20,14 @@ class JudgeAgent:
     def __init__(self, judge_id: str, api_manager: APIManager):
         self.judge_id = judge_id
         self.api_manager = api_manager
+        # self.evaluation_prompt = ChatPromptTemplate.from_messages(
+        #     [("system", self._get_system_prompt()), ("human", "{debate_transcript}")]
+        # )
         self.evaluation_prompt = ChatPromptTemplate.from_messages(
-            [("system", self._get_system_prompt()), ("human", "{debate_transcript}")]
+            [
+                ("system", self._get_system_prompt().replace("{", "{{").replace("}", "}}")),
+                ("human", "{debate_transcript}"),
+            ]
         )
 
     def _get_system_prompt(self) -> str:
