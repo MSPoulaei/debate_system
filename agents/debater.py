@@ -7,7 +7,7 @@ from utils.api_manager import APIManager
 from graph.state import Message, DebateState
 import json
 
-
+DEBATER_LLM_MODEL="gemini-2.5-flash-preview-05-20"
 class DebaterAgent:
     """Implements a debating agent with ideological persona"""
 

@@ -1,4 +1,5 @@
 # main.py
+import argparse
 import os
 import json
 from datetime import datetime
@@ -9,6 +10,8 @@ import matplotlib.pyplot as plt
 from graph.workflow import DebateWorkflow
 from graph.state import DebateState
 from utils.metrics import MetricsCollector
+from agents.debater import DEBATER_LLM_MODEL
+from agents.judge import JUDEGE_LLM_MODEL
 
 class DebateSystem:
     """Main system for running multiple debates"""
@@ -261,6 +264,18 @@ class DebateSystem:
         print(f"\nSummary report saved to: {summary_path}")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run a multi-agent debate system.")
+    parser.add_argument("--debater-model", 
+                        type=str, 
+                        default=DEBATER_LLM_MODEL, 
+                        help=f"LLM model to use for debater agents (default: '{DEBATER_LLM_MODEL}')")
+    parser.add_argument("--judge-model", 
+                        type=str, 
+                        default=JUDEGE_LLM_MODEL, 
+                        help=f"LLM model to use for judge agents (default: '{JUDEGE_LLM_MODEL}')")
+    args = parser.parse_args()
+    DEBATER_LLM_MODEL=args.debater_model
+    JUDEGE_LLM_MODEL=args.judge_model
     # Run all debates
     system = DebateSystem()
     system.run_all_debates()

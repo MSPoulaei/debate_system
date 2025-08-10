@@ -5,7 +5,7 @@ from utils.api_manager import APIManager
 from graph.state import DebateState, JudgeVote, Message
 import json
 
-
+JUDEGE_LLM_MODEL="gemini-2.5-pro"
 class JudgeAgent:
     """Implements a judge agent for evaluating debates"""
 
