@@ -13,15 +13,18 @@ class Message(BaseModel):
     message_type: Literal["argument", "rebuttal", "question", "answer", "conclusion"]
 
 
+class CriterionScore(BaseModel):
+    agent_a: float
+    agent_b: float
+    winner: Literal["Agent A", "Agent B"]
+
 class JudgeVote(BaseModel):
     """Represents a judge's vote and analysis"""
-
     judge_id: str
     winner: Literal["Agent A", "Agent B"]
     confidence: float
     reasoning: str
-    criteria_scores: Dict[str, float]  # Scores for each evaluation criterion
-
+    criteria_scores: Dict[str, CriterionScore]
 
 class DebateState(TypedDict):
     topic: str
