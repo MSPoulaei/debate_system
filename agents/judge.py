@@ -80,7 +80,8 @@ Provide your evaluation in this JSON format:
         transcript = self._prepare_transcript(state)
 
         # Get LLM evaluation
-        llm = self.api_manager.get_llm(temperature=0.3, model="gemini-2.5-pro")
+        llm = self.api_manager.get_llm(temperature=0.3)
+        # llm = self.api_manager.get_llm(temperature=0.3, model="gemini-2.5-pro")
         messages = self.evaluation_prompt.format_messages(debate_transcript=transcript)
         response = llm.invoke(messages)
 
