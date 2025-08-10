@@ -89,7 +89,7 @@ Provide your evaluation in this JSON format:
         # Parse JSON response
         try:
             content_str = response.content
-            json_match = re.search(r'\{(?:[^{}]|(?R))*\}|\$$$(?:[^\$$]|(?R))*\$$', content_str, re.DOTALL)
+            json_match = re.search(r'\{.*\}', content_str, re.DOTALL)
             if json_match:
                 json_str = json_match.group(0)
                 evaluation = json.loads(json_str)
