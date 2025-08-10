@@ -10,18 +10,19 @@ class Message(BaseModel):
     content: str
     turn: int
     timestamp: datetime = Field(default_factory=datetime.now)
-    message_type: Literal["argument", "rebuttal", "question", "answer", "conclusion"]
+    message_type: str
+    # Literal["argument", "rebuttal", "question", "answer", "conclusion"]
 
 
 class CriterionScore(BaseModel):
     agent_a: float
     agent_b: float
-    winner: Literal["Agent A", "Agent B"]
+    winner: str
 
 class JudgeVote(BaseModel):
     """Represents a judge's vote and analysis"""
     judge_id: str
-    winner: Literal["Agent A", "Agent B"]
+    winner: str
     confidence: float
     reasoning: str
     criteria_scores: Dict[str, CriterionScore]
