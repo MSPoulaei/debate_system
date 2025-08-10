@@ -1,0 +1,10 @@
+# requirements.txt
+langgraph
+langchain
+langchain-openai
+python-dotenv
+pydantic
+pandas
+matplotlib
+seaborn
+networkx
