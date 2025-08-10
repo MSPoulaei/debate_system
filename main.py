@@ -91,12 +91,12 @@ class DebateSystem:
             })
             
         with open(judges_path, 'w') as f:
-            json.dump(judge_data, f, indent=2)
+            json.dump(judge_data, f, indent=2, ensure_ascii=False)
             
         # Save metrics
         metrics_path = os.path.join(output_dir, "metrics.json")
         with open(metrics_path, 'w') as f:
-            json.dump(state['metrics'], f, indent=2)
+            json.dump(state['metrics'], f, indent=2, ensure_ascii=False)
             
         # Generate metrics report
         metrics_collector = MetricsCollector()

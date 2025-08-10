@@ -1,3 +1,4 @@
+import re
 from typing import List, Dict, Tuple
 from langchain.prompts import ChatPromptTemplate
 from utils.api_manager import APIManager
@@ -52,6 +53,7 @@ Important: Judge based on debate performance, not ideological preference.
 
 Provide your evaluation in this JSON format:
 {
+    "reasoning": "Detailed explanation of your decision...",
     "winner": "Agent A" or "Agent B",
     "confidence": 0.0 to 1.0,
     "criteria_scores": {
@@ -62,7 +64,6 @@ Provide your evaluation in this JSON format:
         "conduct": {"agent_a": 0-10, "agent_b": 0-10},
         "consistency": {"agent_a": 0-10, "agent_b": 0-10}
     },
-    "reasoning": "Detailed explanation of your decision...",
     "key_moments": ["List of decisive moments in the debate"],
     "strengths": {
         "agent_a": ["List of Agent A's strengths"],
@@ -87,7 +88,13 @@ Provide your evaluation in this JSON format:
 
         # Parse JSON response
         try:
-            evaluation = json.loads(response.content)
+            content_str = response.content
+            json_match = re.search(r'\{(?:[^{}]|(?R))*\}|\$$$(?:[^\$$]|(?R))*\$$', content_str, re.DOTALL)
+            if json_match:
+                json_str = json_match.group(0)
+                evaluation = json.loads(json_str)
+            else:
+                raise ValueError("No valid JSON found in content.")
         except:
             # Fallback parsing if JSON fails
             evaluation = self._parse_evaluation_fallback(response.content)
@@ -106,7 +113,7 @@ Provide your evaluation in this JSON format:
         return JudgeVote(
             judge_id=self.judge_id,
             winner=evaluation.get("winner", "Agent A"),
-            confidence=evaluation.get("confidence", 0.5),
+            confidence=evaluation.get("confidence", -2),
             reasoning=evaluation.get("reasoning", ""),
             criteria_scores=criteria_scores,
         )
@@ -132,7 +139,7 @@ Provide your evaluation in this JSON format:
         # Simple extraction logic
         evaluation = {
             "winner": "Agent A" if "Agent A" in content[:100] else "Agent B",
-            "confidence": 0.5,
+            "confidence": -1,
             "reasoning": content,
             "criteria_scores": {},
         }
